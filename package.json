@@ -1,0 +1,29 @@
+{
+  "name": "bp-playlist-builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Generador de playlists para Spotify a partir de filtros y prompts en lenguaje natural.",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "dev:vercel": "vercel dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "node --test 'test/**/*.test.js'"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "spotify",
+    "playlist",
+    "dj",
+    "bpm"
+  ],
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.0",
+    "vercel": "^54.4.1"
+  }
+}
