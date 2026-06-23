@@ -19,7 +19,6 @@ async function getAccessToken() {
 
     return data.access_token;
 }
-//console.log(await getAccessToken());
 
 async function searchArtist(artistName,accessToken) {
     const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(`artist:"${artistName}"`)}&type=artist&limit=1`;
@@ -35,11 +34,6 @@ async function searchArtist(artistName,accessToken) {
     return data.artists.items[0];
 }
 
-
-//const token = await getAccessToken();
-//const artista = await searchArtist('Cafe Tacvba', token);
-//console.log(artista);
-
 async function searchTracksByArtist(artistName, accessToken) {
     const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(`artist:"${artistName}"`)}&type=track&limit=10`;
 
@@ -53,10 +47,6 @@ async function searchTracksByArtist(artistName, accessToken) {
     
     return data.tracks.items;
 }
-
-//const token = await getAccessToken();
-//const tracks = await searchTracksByArtist('Soda Stereo', token);
-//console.log(tracks);
 
 async function main() {
     const artistName = process.argv[2];
