@@ -87,6 +87,10 @@ Cerrado. Tiene:
 - Credenciales Spotify (Client ID + Secret) guardadas localmente fuera del repo.
 - API key de GetSongBPM recibida y guardada localmente.
 - Hábito de no pegar credenciales en chats establecido (con un susto educativo).
+- Repo en C:\Users\uhias\dev\bp_playlist_builder (fuera de OneDrive).
+- PAT nuevo fine-grained generado (con su fecha de expiración)
+- Identidad de Git configurada. 
+- Pendiente menor: core.editor sin configurar.
 
 ### ✅ Módulo 2 — Conceptos base de web
 Cerrado. Pablo entiende:
@@ -101,11 +105,11 @@ Cerrado. Pablo entiende:
 - Access Token vs Refresh Token y sus vidas útiles.
 - Scopes vs endpoints.
 
-### 🔁 Módulo 3 — Tu primera llamada a Spotify API (A REHACER)
+### ✅ Módulo 3 — Tu primera llamada a Spotify API (CERRADO)
 
 Se completó previamente pero se perdieron los archivos. Hay que reconstruir físicamente.
 
-**Por reconstruir:**
+**Reconstruido completo:**
 - Carpeta `module3-first-api-call/`.
 - `package.json` con `"type": "module"`.
 - `dotenv` instalado.
@@ -132,6 +136,15 @@ Se completó previamente pero se perdieron los archivos. Hay que reconstruir fí
 **Pendientes para sub-módulo opcional después:**
 - Mejorar `searchArtist` con Levenshtein distance para distinguir basura vs errores de tipeo razonables.
 - Devolver múltiples candidatos con imágenes para que el usuario elija.
+
+**Decisiones de convención nuevas que tomamos:**
+- Commits en inglés.
+- Formato "Modulo N:..." para código y "docs:..." para documentación.
+- git add. (NO *).
+- Correr git desde la raíz del repo.
+
+**Realidad técnica confirmada en vivo:**
+- Search con artist:"..." devuelve pocas canciones por artista (Soda Stereo dio solo 5) — limitación a resolver en el Módulo 7.
 
 ### 🔜 Módulo 4 — OAuth con usuario real
 Próximo. Authorization Code Flow para que el usuario logueado pueda dar permisos. Aquí aparece el backend serverless por primera vez. Entregable: botón "Conectar Spotify" funcional en localhost.
