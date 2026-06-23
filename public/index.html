@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BP Playlist Builder</title>
+  <meta name="description" content="Generador de playlists para Spotify a partir de filtros y prompts en lenguaje natural." />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#1db954" />
+</head>
+<body>
+  <header>
+    <h1>🎧 BP Playlist Builder</h1>
+    <p class="subtitle">Genera playlists para Spotify con filtros o lenguaje natural</p>
+  </header>
+
+  <main>
+    <section class="mode-tabs">
+      <button class="tab active" data-mode="filters">Modo Filtros</button>
+      <button class="tab" data-mode="prompt">Modo Prompt</button>
+    </section>
+
+    <section id="filters-mode" class="mode-panel active">
+      <form id="filters-form">
+        <div class="form-group">
+          <label for="genre">Género</label>
+          <select id="genre" name="genre">
+            <option value="">Seleccionar...</option>
+            <option value="latin">Latin</option>
+            <option value="cumbia">Cumbia</option>
+            <option value="reggaeton">Reggaetón</option>
+            <option value="salsa">Salsa</option>
+            <option value="pop">Pop</option>
+            <option value="rock">Rock</option>
+            <option value="electronic">Electrónica</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="year-min">Año desde</label>
+            <input type="number" id="year-min" name="yearMin" min="1950" max="2026" placeholder="1990" />
+          </div>
+          <div class="form-group">
+            <label for="year-max">Año hasta</label>
+            <input type="number" id="year-max" name="yearMax" min="1950" max="2026" placeholder="2026" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bpm-min">BPM mín</label>
+            <input type="number" id="bpm-min" name="bpmMin" min="60" max="200" placeholder="90" />
+          </div>
+          <div class="form-group">
+            <label for="bpm-max">BPM máx</label>
+            <input type="number" id="bpm-max" name="bpmMax" min="60" max="200" placeholder="130" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="track-count">Número de canciones</label>
+          <input type="number" id="track-count" name="trackCount" min="5" max="50" value="20" />
+        </div>
+        <button type="submit" class="btn-primary">Generar Playlist</button>
+      </form>
+    </section>
+
+    <section id="prompt-mode" class="mode-panel">
+      <form id="prompt-form">
+        <div class="form-group">
+          <label for="prompt-input">Describe tu playlist ideal</label>
+          <textarea id="prompt-input" name="prompt" rows="4" placeholder="Ej: Canciones para el momento más alto de una boda en México"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="prompt-track-count">Número de canciones</label>
+          <input type="number" id="prompt-track-count" name="trackCount" min="5" max="50" value="20" />
+        </div>
+        <button type="submit" class="btn-primary">Generar Playlist</button>
+      </form>
+    </section>
+
+    <section id="results" class="results hidden">
+      <h2>Resultado</h2>
+      <div id="results-content"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>BPM and key data provided by <a href="https://getsongbpm.com" target="_blank" rel="noopener">GetSongBPM</a></p>
+  </footer>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
