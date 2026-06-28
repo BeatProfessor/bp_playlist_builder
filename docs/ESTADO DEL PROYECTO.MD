@@ -146,8 +146,57 @@ Se completó previamente pero se perdieron los archivos. Hay que reconstruir fí
 **Realidad técnica confirmada en vivo:**
 - Search con artist:"..." devuelve pocas canciones por artista (Soda Stereo dio solo 5) — limitación a resolver en el Módulo 7.
 
-### 🔜 Módulo 4 — OAuth con usuario real
-Próximo. Authorization Code Flow para que el usuario logueado pueda dar permisos. Aquí aparece el backend serverless por primera vez. Entregable: botón "Conectar Spotify" funcional en localhost.
+### ✅ Módulo 4 — OAuth con usuario real (CERRADO)
+
+Authorization Code Flow completo de punta a punta en local. El usuario logueado puede autorizar la app y se obtienen tokens de usuario. Aquí apareció el backend serverless por primera vez.
+
+**Entregable cumplido:** botón/enlace "Conectar Spotify" en `http://127.0.0.1:3000/` que dispara el flujo completo y termina confirmando conexión exitosa.
+
+**Estructura construida (`module4-oauth/`):**
+- `vercel.json` con rewrite `/callback` → `/api/callback` (resuelve el choque entre la ruta registrada en Spotify y la convención de prefijo `/api/` de Vercel).
+- `api/login.js`: genera `state` con `crypto.randomBytes(16).toString('hex')`, lo guarda en cookie (`HttpOnly`, `Path=/`, `Max-Age=600`, `SameSite=Lax`), arma la URL de autorización con `URLSearchParams`, redirige a Spotify con `res.redirect()`.
+- `api/callback.js`: lee `code` y `state` de `req.query`, lee `state` de la cookie con `cookie.parseCookie()`, los compara (defensa anti-CSRF, corta con 403 si no coinciden), y si cuadran intercambia `code` + `client_secret` por tokens vía POST a `https://accounts.spotify.com/api/token`.
+- `public/index.html`: enlace `<a href="/api/login">` que arranca el flujo. Funcional pero sin estilo (es enlace de texto, no botón con CSS — el diseño visual queda para Módulo 10).
+- `.env` con `SPOTIFY_CLIENT_ID` y `SPOTIFY_CLIENT_SECRET` (ignorado por Git, regla global `.env` línea 69).
+- `hello.js` borrado (fue termómetro de entorno, ya cumplió).
+
+**Scopes definidos (mínimo privilegio):**
+- `playlist-modify-public` — crear/modificar playlists públicas (las playlists del DJ se imaginan públicas, visibles en su perfil).
+- `user-read-private` — leer ID y mercado/país del usuario (necesario para crear playlist en Módulo 8 y para filtrar tracks disponibles en MX en Módulos 6 y 10).
+
+**Dependencias instaladas en este módulo:**
+- `dotenv` (lectura de `.env`, ya conocido del Módulo 3).
+- `cookie@2.0.0` — OJO: en la v2 las funciones se renombraron. Es `parseCookie` (no `parse`) y `stringifyCookie` (no `serialize`). Import con `import * as cookie from 'cookie'`.
+
+**Conceptos ya internalizados (NO rehacer la explicación):**
+- Authorization Code Flow vs Client Credentials: el primero actúa en nombre del usuario (identidad real), por eso permite crear playlists en su cuenta. Client Credentials representa solo a la app, sin usuario detrás.
+- El `code` es seguro de viajar por URL (canal "chismoso": barra de direcciones, historial, logs) porque tiene tres propiedades: es de un solo uso, expira en ~10 min, y no sirve sin el `client_secret`.
+- El flujo está partido en dos pasos para que lo chismoso (el `code`) viaje por el canal chismoso y lo valioso (los tokens) viaje por el canal cerrado (POST backend a backend).
+- El backend existe porque el navegador no esconde nada (todo el frontend es público para cualquiera). El `client_secret` solo vive en el backend, leído de `process.env`.
+- `login.js` solo lleva `client_id` (URL pública); `callback.js` es el único que usa `client_secret` (POST cerrado).
+- Funciones serverless: nacen, responden, mueren. No comparten memoria entre sí → el `state` se persiste en cookie para puentear `login.js` y `callback.js`.
+- Header `Basic` con `Buffer.from('id:secret').toString('base64')` reutilizado del Módulo 3 para el intercambio.
+- `URLSearchParams` para armar query strings y bodies `x-www-form-urlencoded` con encoding automático.
+
+**Hábitos/aprendizajes técnicos nuevos (NO rehacer la explicación):**
+- Vercel detecta funciones de `api/` y la config de `vercel.json` AL ARRANCAR. Tras crear/renombrar archivos o tocar config → matar (`Ctrl+C`) y relanzar `vercel dev`.
+- Es `127.0.0.1`, no `localhost`, al entrar en el navegador (Spotify dejó de aceptar `localhost`).
+- `redirect_uri` debe coincidir EXACTO con el del Dashboard (esquema, host, puerto, ruta, sin barra final).
+- Rutas relativas en git y npm dependen de desde dónde se corren → SIEMPRE desde la raíz del repo. Un output vacío puede significar "ruta inexistente desde aquí", no "no ignorado".
+- Diagnóstico de librerías: `node -e "console.log(Object.keys(require('x')))"` revela los exports reales de un paquete. La forma de importar y los nombres de funciones cambian entre versiones.
+- Debug con datos, no adivinanza: `console.log` de la URL completa cazó el typo del scope (`play-list-modify-public`); fue un string válido para JS pero un scope inexistente para Spotify.
+- Para correr `vercel dev` y comandos a la vez: dos terminales (una con el server vivo mostrando logs, otra para git/npm). La terminal del server es la ventana de diagnóstico.
+
+**Hábito de seguridad reforzado (con segundo susto educativo):**
+- Los tokens (`access_token`, `refresh_token`) son lo más sensible del flujo: el access toca la cuenta del usuario, el refresh no expira. NUNCA se pegan en chats ni capturas, ni siquiera redactados a medias; se describen por nombres de campo.
+- Si se exponen tokens: revocar acceso de la app desde `https://www.spotify.com/account/apps/`. El `client_secret` no se compromete por exponer tokens derivados (vive solo en el backend).
+
+**Pendientes del Módulo 4 (limpieza/hardening, no bloquean avanzar):**
+- `callback.js` ya no muestra tokens en pantalla (mensaje de éxito limpio), pero los tokens aún NO se guardan en ningún lado — solo se reciben en `data` y se descartan. El almacenamiento real es el Módulo 5.
+- `index.html` es funcional pero sin estilo (enlace de texto). Convertirlo en botón presentable → Módulo 10 (UX).
+
+**Realidad técnica confirmada en vivo:**
+- Spotify devuelve en el intercambio: `access_token`, `token_type: Bearer`, `expires_in: 3600` (1 hora), `refresh_token`, y `scope` con los permisos concedidos.
 
 ### Módulo 5 — Leer playlists y tracks del usuario
 Paginación, manejo de tokens que expiran, UI básica de playlists del usuario.
