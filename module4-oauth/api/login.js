@@ -13,7 +13,7 @@ export default function handler(req, res) {
         client_id: clientId,
         response_type: 'code',
         redirect_uri: 'http://127.0.0.1:3000/callback',
-        scope: 'playlist-modify-public user-read-private',
+        scope: 'playlist-modify-public user-read-private playlist-read-private playlist-read-collaborative',
         state: state,
     });
 
