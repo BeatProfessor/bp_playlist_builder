@@ -198,8 +198,15 @@ Authorization Code Flow completo de punta a punta en local. El usuario logueado 
 **Realidad técnica confirmada en vivo:**
 - Spotify devuelve en el intercambio: `access_token`, `token_type: Bearer`, `expires_in: 3600` (1 hora), `refresh_token`, y `scope` con los permisos concedidos.
 
-### Módulo 5 — Leer playlists y tracks del usuario
-Paginación, manejo de tokens que expiran, UI básica de playlists del usuario.
+### ✅ Módulo 5 — Leer playlists y tracks del usuario (CERRADO)
+
+- Módulo 5 cerrado: almacenamiento de tokens, /me, paginación de playlists, refresh automático.
+- Cambios de Spotify feb 2026 confirmados en vivo: /users/{id}/playlists removido → usar /me/playlists; tracks renombrado a items; límite de Search bajó a 10; Development Mode ahora exige Premium, tope de 5 usuarios, un Client ID por dev.
+- Smoke test (dato de oro): POST /me/playlists devolvió 201 en tu app — la creación de playlists es viable, pese a los 403 que reporta la comunidad.
+- Se agregó el scope playlist-read-private (hubo que re-autorizar).
+- API de cookie@2.0.0 aclarada: leer con parseCookie; escribir con atributos con stringifySetCookie (firma de objeto {name, value, ...}), no stringifyCookie. (Corrige la nota vieja del Módulo 4.)
+- Patrón nuevo: lib/ para código compartido no-endpoint; getValidToken(req, res) centraliza validación + refresh.
+- Bug recurrente conocido: UV_HANDLE_CLOSING de libuv en Node 24 + Windows al arrancar vercel dev. No rompe nada; si molesta, bajar a Node 22 LTS. Mitigado consumiendo siempre el body del fetch.
 
 ### Módulo 6 — Filtros disponibles en v1
 Construir filtros con metadata pura: artista, año, género, mercado, explicit, artistas relacionados (vía búsqueda creativa). Excluye popularidad por la deprecación reciente.

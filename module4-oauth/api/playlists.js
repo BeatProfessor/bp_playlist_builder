@@ -12,8 +12,7 @@ export default async function handler(req, res) {
   let urlActual = 'https://api.spotify.com/v1/me/playlists?limit=50';
 
   while (urlActual !== null) {
-    console.log('Pidiendo página:', urlActual);
-
+    
     const respuesta = await fetch(urlActual, {
       headers:{
         'Authorization': `Bearer ${accessToken}`,
