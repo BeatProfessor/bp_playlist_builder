@@ -1,11 +1,10 @@
-import * as cookie from 'cookie';
+import { getValidToken } from '../lib/spotify-auth.js';
 
 export default async function handler(req, res) {
-  const cookies = cookie.parseCookie(req.headers.cookie || '');
-  const accessToken = cookies.spotify_access_token;
+  const accessToken = await getValidToken(req, res);
 
   if (!accessToken) {
-    return res.status(401).send('Access token not found. Please log in.');
+    return res.status(401).json({'error': 'No autenticado. Conecta a Spotify primero.'});
   }
 
   const response = await fetch('https://api.spotify.com/v1/me', {
@@ -14,11 +13,6 @@ export default async function handler(req, res) {
     },
   });
 
-  const data = await response.json();
-
-  if (response.status !== 200) {
-    return res.status(response.status).send(data);
-  }
-
+  const perfil = await response.json
   res.status(200).json(data);
 }

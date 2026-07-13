@@ -1,8 +1,7 @@
-import * as cookie from 'cookie';
+import { getValidToken } from '../lib/spotify-auth.js';
 
 export default async function handler(req, res) {
-  const cookies = cookie.parseCookie(req.headers.cookie || '');
-  const accessToken = cookies.spotify_access_token;
+    const accessToken = await getValidToken(req, res);
 
   if (!accessToken) {
     return res.status(401).send('Access token not found. Please log in.');
